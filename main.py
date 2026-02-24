@@ -4,6 +4,7 @@
 
 import sys
 from brain import Brain
+from emotion import EmotionCore
 from config import ELLI_NAME
 
 
@@ -15,6 +16,7 @@ def main():
     print(f"  Пиши что-нибудь. 'выход' — уйти.\n")
 
     brain = Brain()
+    emotion = EmotionCore()
 
     while True:
         try:
@@ -30,9 +32,19 @@ def main():
             print(f"\n{ELLI_NAME}: Пока!\n")
             break
 
-        print(f"\n  ...думает...\n")
-        answer = brain.think(user_input)
-        print(f"  {ELLI_NAME}: {answer}\n")
+        # Эмоции реагируют на текст
+        emotion.process_input(user_input)
+
+        # Мозг думает с учётом эмоций
+        print(f"\n  ...думает... {emotion.get_status()}\n")
+        context = emotion.get_context()
+        answer = brain.think(user_input, context)
+
+        # Эмоции реагируют на свой ответ тоже
+        emotion.process_input(answer)
+
+        print(f"  {ELLI_NAME}: {answer}")
+        print(f"  {emotion.get_status()}\n")
 
 
 if __name__ == "__main__":

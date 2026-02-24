@@ -23,23 +23,18 @@ class Brain:
             print("Запусти Ollama и попробуй снова.")
             sys.exit(1)
 
-    def think(self, message: str) -> str:
+    def think(self, message: str, context: str = "") -> str:
         """Элли думает и отвечает"""
 
-        # Запоминаем что сказал человек
         self.history.append({"role": "user", "content": message})
 
-        # Собираем контекст для модели
         messages = [
-            {"role": "system", "content": ELLI_PERSONALITY}
+            {"role": "system", "content": ELLI_PERSONALITY + context}
         ] + self.history[-MAX_HISTORY:]
 
-        # Думаем
         try:
             response = ollama.chat(model=self.model, messages=messages)
             answer = response["message"]["content"]
-
-            # Запоминаем свой ответ
             self.history.append({"role": "assistant", "content": answer})
             return answer
 
