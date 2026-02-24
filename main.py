@@ -9,7 +9,7 @@ from memory import Memory
 from drives import Drives
 from life_cycle import LifeCycle
 from config import ELLI_NAME
-
+from telegram_bot import TelegramInterface
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
@@ -24,6 +24,10 @@ def main():
     life = LifeCycle(drives, emotion)
 
     # Запускаем фоновую жизнь
+    telegram = TelegramInterface(brain, emotion, memory, drives)
+    telegram.start_bot()
+    life.set_telegram(telegram)
+
     life.start()
 
     print(f"  {memory.get_status()} {drives.get_status()}")

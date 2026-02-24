@@ -20,6 +20,7 @@ class LifeCycle:
         self.running = False
         self.thread = None
         self.pending_thoughts = []
+        self.telegram = None
         self._load_thoughts()
 
     def _load_thoughts(self):
@@ -69,6 +70,8 @@ class LifeCycle:
                 # Храним максимум 5 мыслей
                 self.pending_thoughts = self.pending_thoughts[-5:]
                 self._save_thoughts()
+                
+        self.check_proactive_messaging()
 
     def _generate_thought(self, drive: str, value: float) -> str:
         """Простая генерация мысли без LLM"""
@@ -121,3 +124,27 @@ class LifeCycle:
     def get_status(self) -> str:
         """Для отладки"""
         return f"[мысли: {len(self.pending_thoughts)}]"
+    
+    def set_telegram(self, telegram):
+        """Подключить телеграм"""
+        self.telegram = telegram
+
+    def check_proactive_messaging(self):
+        """Проверить — хочет ли Элли сама написать?"""
+        if not self.telegram:
+            return
+        
+        if self.drives.wants_to_talk() and self.pending_thoughts:
+            # Формируем сообщение из мыслей
+            thought = self.pending_thoughts[-1]["thought"]
+            message = f"Привет! {thought}"
+            
+            # Отправляем
+            self.telegram.send_proactive_message(message)
+            
+            # Очищаем мысли
+            self.pending_thoughts = []
+            self._save_thoughts()
+            
+            # Сбрасываем потребность
+            self.drives.on_conversation()
