@@ -178,4 +178,4 @@ class Memory:
 
     def get_status(self) -> str:
         """Для отладки"""
-        return 
+        return f"[память: {len(self.episodes)} эпизодов, {len(self.facts)} фактов]"
