@@ -12,6 +12,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from neurons.lif import LIFNeuron, LIFPopulation
 import numpy as np
 from limbic.amygdala import Amygdala
+from limbic.dopamine import DopamineSystem
+from limbic.emotion_core import EmotionCore
 
 def test_lif_neuron():
     """Тест одиночного LIF нейрона"""
@@ -421,6 +423,85 @@ def test_amygdala():
     
     print("Amygdala: OK\n")
 
+def test_dopamine():
+    """Тест дофаминовой системы"""
+    print("Testing Dopamine...")
+    
+    dop = DopamineSystem()
+    
+    # Тест 1: Неожиданная награда → положительный дофамин
+    dop.reset()
+    result = dop.process(0.8)  # Получил хорошее, ожидал 0
+    assert result["rpe"] > 0, "Неожиданная награда → положительный RPE"
+    assert result["level"] > 0, "Дофамин должен быть положительным"
+    print(f"  ✓ Неожиданная награда: RPE={result['rpe']:+.2f}, дофамин={result['level']:+.2f}")
+    
+    # Тест 2: Ожидаемая награда → мало дофамина
+    result2 = dop.process(0.8)  # Повторно — уже ожидает
+    assert abs(result2["rpe"]) < abs(result["rpe"]), "Повторная награда → меньше RPE"
+    print(f"  ✓ Повторная награда: RPE={result2['rpe']:+.2f} (меньше)")
+    
+    # Тест 3: Разочарование
+    dop2 = DopamineSystem()
+    dop2.expected_reward = 0.5  # Ожидает хорошее
+    result3 = dop2.process(-0.3)  # Получает плохое
+    assert result3["rpe"] < 0, "Разочарование → отрицательный RPE"
+    print(f"  ✓ Разочарование: RPE={result3['rpe']:+.2f}, дофамин={result3['level']:+.2f}")
+    
+    # Тест 4: Learning boost
+    dop3 = DopamineSystem()
+    dop3.level = 0.8  # Высокий дофамин
+    boost = dop3.get_learning_boost()
+    assert boost > 1.5, "Высокий дофамин → усиленное обучение"
+    print(f"  ✓ Learning boost при дофамине 0.8: {boost:.1f}x")
+    
+    print("Dopamine: OK\n")
+
+
+def test_emotion_core():
+    """Тест эмоционального ядра"""
+    print("Testing Emotion Core...")
+    
+    core = EmotionCore()
+    
+    # Тест 1: Позитивный текст
+    result = core.process("привет друг!")
+    assert result["valence"] > 0, "Позитивный текст → положительная валентность"
+    print(f"  ✓ 'привет друг!' → валентность={result['valence']:+.2f}, эмоция={result['emotion']}")
+    
+    # Тест 2: Серия позитива → привязанность растёт
+    initial_attachment = core.attachment
+    for msg in ["ты супер", "люблю тебя", "спасибо", "ты молодец"]:
+        core.process(msg)
+    assert core.attachment > initial_attachment, "Позитив → привязанность растёт"
+    print(f"  ✓ Привязанность после позитива: {core.attachment:.2f} (было {initial_attachment:.2f})")
+    
+    # Тест 3: Грубость → доверие падает
+    initial_trust = core.trust
+    core.process("ты тупая дура")
+    assert core.trust < initial_trust, "Грубость → доверие падает"
+    print(f"  ✓ Доверие после грубости: {core.trust:.2f} (было {initial_trust:.2f})")
+    
+    # Тест 4: Контекст для LLM
+    context = core.get_context_for_llm()
+    assert len(context) > 20, "Контекст должен быть непустым"
+    print(f"  ✓ Контекст для LLM: {len(context)} символов")
+    print(f"    '{context[:80]}...'")
+    
+    # Тест 5: Энергия падает
+    initial_energy = core.energy
+    for _ in range(10):
+        core.process("тест")
+    assert core.energy < initial_energy, "Энергия должна падать"
+    print(f"  ✓ Энергия: {core.energy:.2f} (было {initial_energy:.2f})")
+    
+    # Тест 6: Отдых восстанавливает энергию
+    core.rest(minutes=120)
+    assert core.energy > 0.9, "Отдых должен восстановить энергию"
+    print(f"  ✓ Энергия после отдыха: {core.energy:.2f}")
+    
+    print("Emotion Core: OK\n")
+
 def main():
     print("=" * 50)
     print("ТЕСТИРОВАНИЕ ЭЛЛИ")
@@ -437,6 +518,8 @@ def main():
         test_homeostasis()
         test_encoding()
         test_amygdala()
+        test_dopamine()
+        test_emotion_core()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")
