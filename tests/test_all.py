@@ -14,6 +14,9 @@ import numpy as np
 from limbic.amygdala import Amygdala
 from limbic.dopamine import DopamineSystem
 from limbic.emotion_core import EmotionCore
+from hippocampus.episodic import EpisodicMemory
+from hippocampus.semantic import SemanticMemory
+from hippocampus.consolidation import Consolidation
 
 def test_lif_neuron():
     """Тест одиночного LIF нейрона"""
@@ -502,6 +505,130 @@ def test_emotion_core():
     
     print("Emotion Core: OK\n")
 
+def test_episodic_memory():
+    """Тест эпизодической памяти"""
+    print("Testing Episodic Memory...")
+    
+    # Чистим данные
+    import shutil
+    if os.path.exists("data/memory"):
+        shutil.rmtree("data/memory")
+    
+    mem = EpisodicMemory()
+    
+    # Тест 1: Сохранение
+    mem.store(
+        summary="Обсуждали музыку, Иван любит джаз",
+        messages=[
+            {"role": "user", "content": "Я люблю джаз"},
+            {"role": "assistant", "content": "О, какой джаз?"}
+        ],
+        valence=0.7,
+        arousal=0.5
+    )
+    assert len(mem.episodes) == 1, "Должен быть 1 эпизод"
+    print(f"  ✓ Сохранён эпизод: '{mem.episodes[0].summary}'")
+    
+    # Тест 2: Вспоминание
+    mem.store(
+        summary="Иван рассказывал о работе программистом",
+        messages=[{"role": "user", "content": "Я работаю программистом"}],
+        valence=0.3,
+        arousal=0.3
+    )
+    
+    results = mem.recall("джаз музыка")
+    assert len(results) > 0, "Должен вспомнить эпизод о музыке"
+    print(f"  ✓ Вспомнила по 'джаз музыка': '{results[0]['summary']}'")
+    
+    # Тест 3: Важность
+    ep = mem.episodes[0]
+    assert ep.importance > mem.episodes[1].importance, \
+        "Эмоциональный эпизод должен быть важнее"
+    print(f"  ✓ Важность: музыка={mem.episodes[0].importance:.2f} > работа={mem.episodes[1].importance:.2f}")
+    
+    # Тест 4: Статистика
+    stats = mem.get_stats()
+    assert stats["count"] == 2, "Должно быть 2 эпизода"
+    print(f"  ✓ Статистика: {stats}")
+    
+    print("Episodic Memory: OK\n")
+
+
+def test_semantic_memory():
+    """Тест семантической памяти"""
+    print("Testing Semantic Memory...")
+    
+    import shutil
+    if os.path.exists("data/memory"):
+        shutil.rmtree("data/memory")
+    
+    mem = SemanticMemory()
+    
+    # Тест 1: Сохранение факта
+    mem.store("Иван любит джаз", importance=0.8)
+    assert len(mem.facts) == 1, "Должен быть 1 факт"
+    print(f"  ✓ Сохранён факт: 'Иван любит джаз'")
+    
+    # Тест 2: Вспоминание
+    mem.store("Иван программист", importance=0.7)
+    results = mem.recall("джаз музыка")
+    assert len(results) > 0, "Должен вспомнить факт о джазе"
+    print(f"  ✓ Вспомнила по 'джаз': '{results[0]}'")
+    
+    # Тест 3: Автоизвлечение фактов
+    mem.extract_facts("Меня зовут Иван и я люблю пиццу")
+    all_facts = mem.get_all()
+    assert len(all_facts) > 2, "Должна извлечь факты из текста"
+    print(f"  ✓ Извлечено фактов: {len(all_facts)}")
+    for f in all_facts:
+        print(f"    - {f}")
+    
+    # Тест 4: Дубликаты усиливаются
+    old_strength = mem.facts["иван любит джаз"]["strength"]
+    mem.store("Иван любит джаз")
+    new_strength = mem.facts["иван любит джаз"]["strength"]
+    assert new_strength > old_strength, "Повторный факт должен усилиться"
+    print(f"  ✓ Повторение усиливает: {old_strength:.2f} → {new_strength:.2f}")
+    
+    print("Semantic Memory: OK\n")
+
+
+def test_consolidation():
+    """Тест консолидации (сон)"""
+    print("Testing Consolidation...")
+    
+    import shutil
+    if os.path.exists("data/memory"):
+        shutil.rmtree("data/memory")
+    
+    ep_mem = EpisodicMemory()
+    sem_mem = SemanticMemory()
+    
+    # Добавляем эпизоды
+    for i in range(5):
+        ep_mem.store(
+            summary=f"Разговор номер {i} о музыке и джазе",
+            messages=[{"role": "user", "content": f"Сообщение {i}"}],
+            valence=0.5,
+            arousal=0.4
+        )
+    
+    consolidation = Consolidation(ep_mem, sem_mem)
+    results = consolidation.run(cycles=3)
+    
+    assert results["replayed"] > 0, "Должен прокрутить эпизоды"
+    print(f"  ✓ Прокручено: {results['replayed']}")
+    print(f"  ✓ Забыто эпизодов: {results['forgotten_episodes']}")
+    print(f"  ✓ Извлечено фактов: {results['extracted_facts']}")
+    
+    # Проверяем что сила выросла
+    for ep in ep_mem.episodes:
+        assert ep.strength > 0.5, "После replay сила должна быть высокой"
+    print(f"  ✓ Сила эпизодов после replay > 0.5")
+    
+    print("Consolidation: OK\n")
+
 def main():
     print("=" * 50)
     print("ТЕСТИРОВАНИЕ ЭЛЛИ")
@@ -520,6 +647,9 @@ def main():
         test_amygdala()
         test_dopamine()
         test_emotion_core()
+        test_episodic_memory()
+        test_semantic_memory()
+        test_consolidation()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")

@@ -1,0 +1,82 @@
+[
+  {
+    "timestamp": 1772124219.7414038,
+    "date": "2026-02-26 19:43",
+    "summary": "Разговор номер 0 о музыке и джазе",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Сообщение 0"
+      }
+    ],
+    "valence": 0.5,
+    "arousal": 0.4,
+    "importance": 0.52,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772124219.7414038,
+    "date": "2026-02-26 19:43",
+    "summary": "Разговор номер 1 о музыке и джазе",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Сообщение 1"
+      }
+    ],
+    "valence": 0.5,
+    "arousal": 0.4,
+    "importance": 0.52,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772124219.7424016,
+    "date": "2026-02-26 19:43",
+    "summary": "Разговор номер 2 о музыке и джазе",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Сообщение 2"
+      }
+    ],
+    "valence": 0.5,
+    "arousal": 0.4,
+    "importance": 0.52,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772124219.7424016,
+    "date": "2026-02-26 19:43",
+    "summary": "Разговор номер 3 о музыке и джазе",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Сообщение 3"
+      }
+    ],
+    "valence": 0.5,
+    "arousal": 0.4,
+    "importance": 0.52,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772124219.7433994,
+    "date": "2026-02-26 19:43",
+    "summary": "Разговор номер 4 о музыке и джазе",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Сообщение 4"
+      }
+    ],
+    "valence": 0.5,
+    "arousal": 0.4,
+    "importance": 0.52,
+    "strength": 1.0,
+    "recall_count": 0
+  }
+]
