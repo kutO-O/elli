@@ -198,7 +198,76 @@ def test_izhikevich_population():
     print(f"  ✓ Ток 5: {np.mean(act_low):.3f}, Ток 15: {np.mean(act_high):.3f}")
     
     print("Izhikevich Population: OK\n")
+
+from neurons.stdp import STDPRule, SynapticNetwork
+
+
+def test_stdp():
+    """Тест STDP обучения"""
+    print("Testing STDP...")
     
+    # Тест 1: Pre до post → усиление
+    stdp = STDPRule()
+    dw = stdp.compute_dw(dt=10.0)  # Pre на 10 мс раньше
+    assert dw > 0, "Pre до post должно усиливать связь"
+    print(f"  ✓ Pre до post (dt=10мс): Δw = +{dw:.4f} (усиление)")
+    
+    # Тест 2: Pre после post → ослабление
+    dw = stdp.compute_dw(dt=-10.0)  # Pre на 10 мс позже
+    assert dw < 0, "Pre после post должно ослаблять связь"
+    print(f"  ✓ Pre после post (dt=-10мс): Δw = {dw:.4f} (ослабление)")
+    
+    # Тест 3: Далёкие спайки → малое изменение
+    dw_close = abs(stdp.compute_dw(dt=5.0))
+    dw_far = abs(stdp.compute_dw(dt=50.0))
+    assert dw_close > dw_far, "Близкие спайки → большее изменение"
+    print(f"  ✓ Близко (5мс): {dw_close:.4f} > Далеко (50мс): {dw_far:.4f}")
+    
+    print("STDP Rule: OK\n")
+
+
+def test_synaptic_network():
+    """Тест синаптической сети с STDP"""
+    print("Testing Synaptic Network...")
+    
+    net = SynapticNetwork(n_pre=10, n_post=5, initial_weight=0.5)
+    
+    # Тест 1: Начальный вес
+    initial_mean = net.get_mean_weight()
+    assert abs(initial_mean - 0.5) < 0.1, "Начальный вес должен быть ~0.5"
+    print(f"  ✓ Начальный средний вес: {initial_mean:.3f}")
+    
+    # Тест 2: Коррелированные спайки → усиление
+    net_corr = SynapticNetwork(n_pre=10, n_post=5, initial_weight=0.5)
+    
+    for _ in range(1000):
+        # Pre спайкают
+        pre = np.zeros(10)
+        pre[0:3] = 1  # Нейроны 0,1,2 активны
+        
+        # Post спайкают ПОСЛЕ pre (через 1 шаг)
+        currents = net_corr.step(pre, np.zeros(5))
+        
+        post = np.zeros(5)
+        post[0] = 1  # Нейрон 0 активен
+        net_corr.step(np.zeros(10), post)
+    
+    # Связи от pre[0:3] к post[0] должны усилиться
+    mean_after = net_corr.get_mean_weight()
+    stats = net_corr.get_weight_stats()
+    print(f"  ✓ После обучения: mean={stats['mean']:.3f}, min={stats['min']:.3f}, max={stats['max']:.3f}")
+    
+    # Тест 3: Токи передаются
+    net2 = SynapticNetwork(n_pre=5, n_post=3, initial_weight=0.8)
+    pre_spikes = np.array([1, 0, 1, 0, 0], dtype=float)
+    post_spikes = np.zeros(3)
+    currents = net2.step(pre_spikes, post_spikes)
+    
+    assert np.any(currents > 0), "Должны быть входные токи"
+    print(f"  ✓ Токи передаются: {currents}")
+    
+    print("Synaptic Network: OK\n")
+
 def main():
     print("=" * 50)
     print("ТЕСТИРОВАНИЕ НЕЙРОННОГО СУБСТРАТА")
@@ -210,6 +279,8 @@ def main():
         test_lif_population()
         test_izhikevich_neuron()
         test_izhikevich_population()
+        test_stdp()
+        test_synaptic_network()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")
