@@ -113,7 +113,92 @@ def test_lif_population():
     
     print("LIF Population: OK\n")
 
+from neurons.izhikevich import IzhikevichNeuron, IzhikevichPopulation, NEURON_TYPES
 
+
+def test_izhikevich_neuron():
+    """Тест Izhikevich нейрона"""
+    print("Testing Izhikevich Neuron...")
+    
+    # Тест 1: Без входа не спайкает
+    neuron = IzhikevichNeuron("regular_spiking")
+    neuron.reset()
+    spiked = False
+    for _ in range(1000):
+        if neuron.step(0.0):
+            spiked = True
+    assert not spiked, "Не должен спайкать без входа"
+    print("  ✓ Без входа → нет спайков")
+    
+    # Тест 2: С током спайкает
+    neuron.reset()
+    spike_count = 0
+    for _ in range(10000):
+        if neuron.step(10.0):
+            spike_count += 1
+    assert spike_count > 0, "Должен спайкать с током"
+    print(f"  ✓ Regular Spiking: {spike_count} спайков")
+    
+    # Тест 3: Все типы нейронов работают
+    for name in NEURON_TYPES:
+        n = IzhikevichNeuron(name)
+        n.reset()
+        count = 0
+        for _ in range(10000):
+            if n.step(10.0):
+                count += 1
+        print(f"  ✓ {name}: {count} спайков — {n.description}")
+    
+    # Тест 4: Fast spiking быстрее regular
+    rs = IzhikevichNeuron("regular_spiking")
+    fs = IzhikevichNeuron("fast_spiking")
+    rs.reset()
+    fs.reset()
+    
+    rs_count = sum(1 for _ in range(10000) if rs.step(10.0))
+    fs_count = sum(1 for _ in range(10000) if fs.step(10.0))
+    
+    assert fs_count > rs_count, "Fast spiking должен быть быстрее"
+    print(f"  ✓ Fast ({fs_count}) > Regular ({rs_count})")
+    
+    print("Izhikevich Neuron: OK\n")
+
+
+def test_izhikevich_population():
+    """Тест популяции Izhikevich"""
+    print("Testing Izhikevich Population...")
+    
+    # Тест 1: Популяция с шумом
+    pop = IzhikevichPopulation(n_neurons=50, neuron_type="regular_spiking", noise=0.5)
+    pop.reset()
+    
+    activities = []
+    for _ in range(1000):
+        pop.step(10.0)
+        activities.append(pop.get_activity())
+    
+    mean_act = np.mean(activities)
+    assert mean_act > 0, "Популяция должна быть активна"
+    print(f"  ✓ Популяция (50 нейронов, шум): активность = {mean_act:.3f}")
+    
+    # Тест 2: Больше тока → больше активность
+    pop.reset()
+    act_low = []
+    for _ in range(1000):
+        pop.step(5.0)
+        act_low.append(pop.get_activity())
+    
+    pop.reset()
+    act_high = []
+    for _ in range(1000):
+        pop.step(15.0)
+        act_high.append(pop.get_activity())
+    
+    assert np.mean(act_high) > np.mean(act_low), "Больше тока → больше активность"
+    print(f"  ✓ Ток 5: {np.mean(act_low):.3f}, Ток 15: {np.mean(act_high):.3f}")
+    
+    print("Izhikevich Population: OK\n")
+    
 def main():
     print("=" * 50)
     print("ТЕСТИРОВАНИЕ НЕЙРОННОГО СУБСТРАТА")
@@ -123,6 +208,8 @@ def main():
     try:
         test_lif_neuron()
         test_lif_population()
+        test_izhikevich_neuron()
+        test_izhikevich_population()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")
