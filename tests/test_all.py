@@ -315,6 +315,66 @@ def test_homeostasis():
     
     print("Homeostasis: OK\n")
 
+from neurons.encoding import RateEncoder, PopulationEncoder, TextEncoder
+
+
+def test_encoding():
+    """Тест кодирования"""
+    print("Testing Encoding...")
+    
+    # Тест 1: Rate coding — encode/decode
+    rate = RateEncoder(max_rate=100.0)
+    
+    original = 0.7
+    spikes = rate.encode(original, duration_ms=1000.0)
+    decoded = rate.decode(spikes, duration_ms=1000.0)
+    
+    error = abs(original - decoded)
+    assert error < 0.2, f"Rate coding ошибка слишком большая: {error}"
+    print(f"  ✓ Rate coding: {original} → спайки → {decoded:.2f} (ошибка: {error:.2f})")
+    
+    # Тест 2: Rate coding — больше значение → больше спайков
+    spikes_low = rate.encode(0.2, duration_ms=1000.0)
+    spikes_high = rate.encode(0.8, duration_ms=1000.0)
+    
+    assert np.sum(spikes_high) > np.sum(spikes_low), "Больше значение → больше спайков"
+    print(f"  ✓ Значение 0.2 → {np.sum(spikes_low)} спайков, 0.8 → {np.sum(spikes_high)} спайков")
+    
+    # Тест 3: Population coding — encode/decode
+    pop = PopulationEncoder(n_neurons=20, value_range=(0.0, 1.0))
+    
+    original = 0.6
+    activations = pop.encode(original)
+    decoded = pop.decode(activations)
+    
+    error = abs(original - decoded)
+    assert error < 0.1, f"Population coding ошибка: {error}"
+    print(f"  ✓ Population coding: {original} → паттерн → {decoded:.2f} (ошибка: {error:.2f})")
+    
+    # Тест 4: Population coding — пик в правильном месте
+    activations = pop.encode(0.5)
+    peak_idx = np.argmax(activations)
+    peak_value = pop.preferred[peak_idx]
+    assert abs(peak_value - 0.5) < 0.1, "Пик должен быть около 0.5"
+    print(f"  ✓ Пик активации для 0.5 на нейроне с preferred={peak_value:.2f}")
+    
+    # Тест 5: Text encoding — одинаковые слова → одинаковые паттерны
+    text_enc = TextEncoder(n_neurons=100)
+    
+    p1 = text_enc.encode_word("привет")
+    p2 = text_enc.encode_word("привет")
+    p3 = text_enc.encode_word("пока")
+    
+    assert np.array_equal(p1, p2), "Одинаковые слова → одинаковые паттерны"
+    assert not np.array_equal(p1, p3), "Разные слова → разные паттерны"
+    print(f"  ✓ 'привет' == 'привет': True")
+    print(f"  ✓ 'привет' == 'пока': False")
+    
+    # Тест 6: Text similarity
+    sim_same = text_enc.similarity("я люблю кошек", "я люблю кошек")
+    sim_similar = text_enc.similarity("я люблю кошек", "я люблю собак")
+    
+
 def main():
     print("=" * 50)
     print("ТЕСТИРОВАНИЕ НЕЙРОННОГО СУБСТРАТА")
@@ -329,6 +389,7 @@ def main():
         test_stdp()
         test_synaptic_network()
         test_homeostasis()
+        test_encoding()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")
