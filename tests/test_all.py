@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from neurons.lif import LIFNeuron, LIFPopulation
 import numpy as np
-
+from limbic.amygdala import Amygdala
 
 def test_lif_neuron():
     """Тест одиночного LIF нейрона"""
@@ -374,10 +374,56 @@ def test_encoding():
     sim_same = text_enc.similarity("я люблю кошек", "я люблю кошек")
     sim_similar = text_enc.similarity("я люблю кошек", "я люблю собак")
     
+def test_amygdala():
+    """Тест амигдалы"""
+    print("Testing Amygdala...")
+    
+    amygdala = Amygdala(input_size=100)
+    
+    # Тест 1: Позитивный текст → положительная валентность
+    amygdala.reset()
+    result = amygdala.process("привет друг люблю тебя")
+    assert result["valence"] > 0, f"Позитивный текст должен дать +, получено: {result['valence']}"
+    print(f"  ✓ 'привет друг люблю' → валентность: {result['valence']:+.2f} ({result['emotion']})")
+    
+    # Тест 2: Негативный текст → отрицательная валентность
+    amygdala.reset()
+    result = amygdala.process("ненавижу тупой злюсь")
+    assert result["valence"] < 0, f"Негативный текст должен дать -, получено: {result['valence']}"
+    print(f"  ✓ 'ненавижу тупой злюсь' → валентность: {result['valence']:+.2f} ({result['emotion']})")
+    
+    # Тест 3: Нейтральный текст → около нуля
+    amygdala.reset()
+    result = amygdala.process("стол стоит у окна")
+    assert -0.3 < result["valence"] < 0.3, f"Нейтральный текст должен дать ~0, получено: {result['valence']}"
+    print(f"  ✓ 'стол стоит у окна' → валентность: {result['valence']:+.2f} ({result['emotion']})")
+    
+    # Тест 4: Инерция работает
+    amygdala.reset()
+    amygdala.process("отлично супер прекрасно")
+    high_valence = amygdala.valence
+    
+    amygdala.process("плохо")
+    assert amygdala.valence > -0.5, "Инерция должна смягчать резкие изменения"
+    print(f"  ✓ Инерция: было {high_valence:+.2f}, после 'плохо' стало {amygdala.valence:+.2f} (плавно)")
+    
+    # Тест 5: Обучение работает
+    amygdala.reset()
+    amygdala.learn("кирпич", target_valence=0.8, n_iterations=20)
+    result = amygdala.process("кирпич")
+    assert result["valence"] > 0, "После обучения 'кирпич' должен быть позитивным"
+    print(f"  ✓ После обучения 'кирпич' → валентность: {result['valence']:+.2f}")
+    
+    # Тест 6: Сколько слов знает
+    count = amygdala.get_known_words_count()
+    assert count > 40, "Должна знать минимум 40 слов"
+    print(f"  ✓ Знает {count} эмоциональных слов")
+    
+    print("Amygdala: OK\n")
 
 def main():
     print("=" * 50)
-    print("ТЕСТИРОВАНИЕ НЕЙРОННОГО СУБСТРАТА")
+    print("ТЕСТИРОВАНИЕ ЭЛЛИ")
     print("=" * 50)
     print()
     
@@ -390,6 +436,7 @@ def main():
         test_synaptic_network()
         test_homeostasis()
         test_encoding()
+        test_amygdala()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")
