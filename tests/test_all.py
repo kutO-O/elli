@@ -268,6 +268,53 @@ def test_synaptic_network():
     
     print("Synaptic Network: OK\n")
 
+from neurons.homeostasis import HomeostaticRegulator
+
+
+def test_homeostasis():
+    """Тест гомеостаза"""
+    print("Testing Homeostasis...")
+    
+    # Тест 1: Слишком высокая активность → возбудимость падает
+    reg = HomeostaticRegulator(target_rate=5.0, tau=100.0, strength=0.5)
+    
+    # Имитируем высокую активность
+    for _ in range(1000):
+        reg.update(spike_count=10, n_neurons=100)  # Много спайков
+    
+    assert reg.excitability < 1.0, "При высокой активности возбудимость должна упасть"
+    print(f"  ✓ Высокая активность → возбудимость: {reg.excitability:.3f} (< 1.0)")
+    
+    # Тест 2: Слишком низкая активность → возбудимость растёт
+    reg2 = HomeostaticRegulator(target_rate=5.0, tau=100.0, strength=0.5)
+    
+    for _ in range(1000):
+        reg2.update(spike_count=0, n_neurons=100)  # Нет спайков
+    
+    assert reg2.excitability > 1.0, "При низкой активности возбудимость должна вырасти"
+    print(f"  ✓ Низкая активность → возбудимость: {reg2.excitability:.3f} (> 1.0)")
+    
+    # Тест 3: Нормальная активность → возбудимость ~1.0
+    reg3 = HomeostaticRegulator(target_rate=5.0, tau=100.0, strength=0.5)
+    
+    for _ in range(1000):
+        # spike_count чтобы получить ~5 Гц:
+        # 5 Гц = spike_count/n_neurons * 1000/DT
+        # spike_count = 5 * 100 * 0.1 / 1000 = 0.05
+        reg3.update(spike_count=0.05, n_neurons=100)
+    
+    assert 0.8 < reg3.excitability < 1.2, "При нормальной активности возбудимость ~1.0"
+    print(f"  ✓ Нормальная активность → возбудимость: {reg3.excitability:.3f} (~1.0)")
+    
+    # Тест 4: scale_input работает
+    reg4 = HomeostaticRegulator()
+    reg4.excitability = 2.0
+    scaled = reg4.scale_input(10.0)
+    assert scaled == 20.0, "Масштабирование должно работать"
+    print(f"  ✓ scale_input(10.0) с excitability=2.0 → {scaled}")
+    
+    print("Homeostasis: OK\n")
+
 def main():
     print("=" * 50)
     print("ТЕСТИРОВАНИЕ НЕЙРОННОГО СУБСТРАТА")
@@ -281,6 +328,7 @@ def main():
         test_izhikevich_population()
         test_stdp()
         test_synaptic_network()
+        test_homeostasis()
         
         print("=" * 50)
         print("ВСЕ ТЕСТЫ ПРОЙДЕНЫ ✓")
