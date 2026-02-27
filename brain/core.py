@@ -13,7 +13,8 @@ from hippocampus.episodic import EpisodicMemory
 from hippocampus.semantic import SemanticMemory
 from hippocampus.consolidation import Consolidation
 from brain.context_builder import ContextBuilder
-
+from body.voice import Voice
+from config import VOICE_ENABLED
 
 class Brain:
     
@@ -24,7 +25,7 @@ class Brain:
         self.semantic = SemanticMemory()
         self.consolidation = Consolidation(self.episodic, self.semantic)
         self.context_builder = ContextBuilder(self.emotion, self.episodic, self.semantic)
-        
+        self.voice = Voice() if VOICE_ENABLED else None
         # Рабочая память (текущий диалог)
         self.working_memory = []
         
@@ -48,16 +49,31 @@ class Brain:
         # 3. Сборка контекста
         messages = self.context_builder.build(text, self.working_memory)
         
-        # 4. Генерация ответа (через Ollama)
+               # 4. Генерация ответа
         response_text = ""
+        buffer = ""  # Буфер для предложений
+        
         try:
-            stream = ollama.chat(model=OLLAMA_MODEL, messages=messages, stream=True)
+            stream = ollama.chat(
+    model=OLLAMA_MODEL,
+    messages=messages,
+    stream=True
+)
             
-            # Генерация потоком
             for chunk in stream:
                 content = chunk['message']['content']
                 response_text += content
-                yield content  # Возвращаем кусочки для UI
+                buffer += content
+                yield content
+                
+                # Если голос включен — отправляем по предложениям
+                if self.voice and content in [".", "!", "?", "\n"]:
+                    self.voice.say(
+                        buffer, 
+                        self.emotion.amygdala.valence,
+                        self.emotion.amygdala.arousal
+                    )
+                    buffer = ""
                 
         except Exception as e:
             error_msg = f"\n[Ошибка мозга: {e}]"

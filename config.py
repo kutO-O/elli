@@ -26,5 +26,5 @@ TELEGRAM_TOKEN = ""  # Вставишь когда подключим
 TELEGRAM_CHAT_ID = 0
 
 # === РЕЖИМЫ РАБОТЫ ===
-VOICE_ENABLED = False  # Пока выключен
+VOICE_ENABLED = True  # Пока выключен
 TELEGRAM_ENABLED = False  # Пока выключен

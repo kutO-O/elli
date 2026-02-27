@@ -126,5 +126,401 @@
     "importance": 0.206,
     "strength": 1.0,
     "recall_count": 0
+  },
+  {
+    "timestamp": 1772125032.119824,
+    "date": "2026-02-26 19:57",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "\n[Ошибка мозга: 1 validation error for ChatRequest\nmodel\n  Input should be a valid string [type=string_type, input_value=Ellipsis, input_type=ellipsis]\n    For further information visit https://errors.pydantic.dev/2.12/v/string_type]"
+      }
+    ],
+    "valence": 0.11417624999999999,
+    "arousal": 0.12917625,
+    "importance": 0.207,
+    "strength": 1.0,
+    "recall_count": 5
+  },
+  {
+    "timestamp": 1772125112.7307503,
+    "date": "2026-02-26 19:58",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "\n[Ошибка мозга: 1 validation error for ChatRequest\nmodel\n  Input should be a valid string [type=string_type, input_value=Ellipsis, input_type=ellipsis]\n    For further information visit https://errors.pydantic.dev/2.12/v/string_type]"
+      }
+    ],
+    "valence": 0.11417624999999999,
+    "arousal": 0.12917625,
+    "importance": 0.207,
+    "strength": 1.0,
+    "recall_count": 3
+  },
+  {
+    "timestamp": 1772125205.2864895,
+    "date": "2026-02-26 20:00",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "\n[Ошибка мозга: 1 validation error for ChatRequest\nmodel\n  Input should be a valid string [type=string_type, input_value=Ellipsis, input_type=ellipsis]\n    For further information visit https://errors.pydantic.dev/2.12/v/string_type]"
+      }
+    ],
+    "valence": 0.11417624999999999,
+    "arousal": 0.12917625,
+    "importance": 0.207,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772125293.199739,
+    "date": "2026-02-26 20:01",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "\n[Ошибка мозга: 1 validation error for ChatRequest\nmodel\n  Input should be a valid string [type=string_type, input_value=Ellipsis, input_type=ellipsis]\n    For further information visit https://errors.pydantic.dev/2.12/v/string_type]"
+      }
+    ],
+    "valence": 0.11417624999999999,
+    "arousal": 0.12917625,
+    "importance": 0.207,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772125552.4688451,
+    "date": "2026-02-26 20:05",
+    "summary": "Разговор из 2 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Как дела? \n"
+      },
+      {
+        "role": "user",
+        "content": "Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force"
+      },
+      {
+        "role": "assistant",
+        "content": "Какой-то интересный код. 🐍\n\n\n"
+      }
+    ],
+    "valence": 0.12212310444132596,
+    "arousal": 0.14980935444132598,
+    "importance": 0.218,
+    "strength": 1.0,
+    "recall_count": 2
+  },
+  {
+    "timestamp": 1772125574.4161434,
+    "date": "2026-02-26 20:06",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Что у тебя на уме? \n"
+      }
+    ],
+    "valence": 0.17417625,
+    "arousal": 0.17417625,
+    "importance": 0.257,
+    "strength": 1.0,
+    "recall_count": 3
+  },
+  {
+    "timestamp": 1772125630.0322914,
+    "date": "2026-02-26 20:07",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Что на уме?   \n"
+      }
+    ],
+    "valence": 0.18167624999999998,
+    "arousal": 0.18167624999999998,
+    "importance": 0.264,
+    "strength": 1.0,
+    "recall_count": 4
+  },
+  {
+    "timestamp": 1772126002.4794981,
+    "date": "2026-02-26 20:13",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.   \n"
+      }
+    ],
+    "valence": 0.24917625,
+    "arousal": 0.24917625,
+    "importance": 0.324,
+    "strength": 1.0,
+    "recall_count": 10
+  },
+  {
+    "timestamp": 1772126069.2640767,
+    "date": "2026-02-26 20:14",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет. Что у тебя на уме?  \n"
+      }
+    ],
+    "valence": 0.17417625,
+    "arousal": 0.17417625,
+    "importance": 0.257,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772126125.7516563,
+    "date": "2026-02-26 20:15",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  \n"
+      }
+    ],
+    "valence": 0.24917625,
+    "arousal": 0.24917625,
+    "importance": 0.324,
+    "strength": 1.0,
+    "recall_count": 8
+  },
+  {
+    "timestamp": 1772126246.2326488,
+    "date": "2026-02-26 20:17",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  \n"
+      }
+    ],
+    "valence": 0.24917625,
+    "arousal": 0.24917625,
+    "importance": 0.324,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772199277.7047532,
+    "date": "2026-02-27 16:34",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "\n[Ошибка мозга: [WinError 10061] Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение]"
+      }
+    ],
+    "valence": 0.11417624999999999,
+    "arousal": 0.12917625,
+    "importance": 0.207,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772199339.8670456,
+    "date": "2026-02-27 16:35",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "првиет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет. \n\nЧто интересного у тебя сегодня?  \n"
+      }
+    ],
+    "valence": 0.060000000000000005,
+    "arousal": 0.07268625000000001,
+    "importance": 0.158,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772199538.2368321,
+    "date": "2026-02-27 16:38",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Что сейчас интересного? \n"
+      }
+    ],
+    "valence": 0.18167624999999998,
+    "arousal": 0.18167624999999998,
+    "importance": 0.264,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772199769.7692885,
+    "date": "2026-02-27 16:42",
+    "summary": "Разговор из 2 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Что сегодня слушаешь?  \n"
+      },
+      {
+        "role": "user",
+        "content": "нечего"
+      },
+      {
+        "role": "assistant",
+        "content": "Слушаешь музыку сейчас или... просто ничего? \n\n\n"
+      }
+    ],
+    "valence": 0.12995176124601562,
+    "arousal": 0.15763801124601565,
+    "importance": 0.225,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772200194.6504724,
+    "date": "2026-02-27 16:49",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет. \n"
+      }
+    ],
+    "valence": 0.24917625,
+    "arousal": 0.24917625,
+    "importance": 0.324,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772200546.94414,
+    "date": "2026-02-27 16:55",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  \n"
+      }
+    ],
+    "valence": 0.24917625,
+    "arousal": 0.24917625,
+    "importance": 0.324,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772200612.772542,
+    "date": "2026-02-27 16:56",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Ты говорил о пицце вчера? \n"
+      }
+    ],
+    "valence": 0.1652325,
+    "arousal": 0.1652325,
+    "importance": 0.249,
+    "strength": 1.0,
+    "recall_count": 0
+  },
+  {
+    "timestamp": 1772200805.821472,
+    "date": "2026-02-27 17:00",
+    "summary": "Разговор из 1 сообщений.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "привет"
+      },
+      {
+        "role": "assistant",
+        "content": "Привет.  Как дела? \n"
+      }
+    ],
+    "valence": 0.18917625,
+    "arousal": 0.18917625,
+    "importance": 0.27,
+    "strength": 1.0,
+    "recall_count": 0
   }
 ]
