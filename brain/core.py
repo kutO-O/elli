@@ -15,6 +15,7 @@ from hippocampus.consolidation import Consolidation
 from brain.context_builder import ContextBuilder
 from body.voice import Voice
 from config import VOICE_ENABLED
+from hippocampus.vector_memory import VectorMemory
 
 class Brain:
     
@@ -24,11 +25,19 @@ class Brain:
         self.episodic = EpisodicMemory()
         self.semantic = SemanticMemory()
         self.consolidation = Consolidation(self.episodic, self.semantic)
-        self.context_builder = ContextBuilder(self.emotion, self.episodic, self.semantic)
         self.voice = Voice() if VOICE_ENABLED else None
         # Рабочая память (текущий диалог)
         self.working_memory = []
+                # Векторная память
+        self.vector_memory = VectorMemory()
         
+        # Обновляем context_builder
+        self.context_builder = ContextBuilder(
+            self.emotion, 
+            self.episodic, 
+            self.semantic,
+            self.vector_memory  # <-- добавили
+        )
         # Фоновый поток жизни (пока просто сон)
         self.running = False
         self.thread = None
@@ -45,7 +54,8 @@ class Brain:
         
         # 2. Извлечение фактов (параллельно)
         self.semantic.extract_facts(text)
-        
+                # 2.5 Сохраняем в векторную память
+        self.vector_memory.add_fact(text)
         # 3. Сборка контекста
         messages = self.context_builder.build(text, self.working_memory)
         

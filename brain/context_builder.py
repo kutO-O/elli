@@ -1,6 +1,5 @@
 """
 Сборщик контекста для LLM.
-Берёт состояние мозга и превращает в промпт.
 """
 
 from config import ELLI_NAME
@@ -8,40 +7,31 @@ from config import ELLI_NAME
 
 class ContextBuilder:
     
-    def __init__(self, emotion_core, episodic_memory, semantic_memory):
+    def __init__(self, emotion_core, episodic_memory, semantic_memory, vector_memory=None):
         self.emotion = emotion_core
         self.episodic = episodic_memory
         self.semantic = semantic_memory
+        self.vector = vector_memory
     
     def build(self, user_text, recent_messages):
-        """
-        Собрать полный контекст для ответа.
-        
-        Args:
-            user_text: Текущее сообщение пользователя
-            recent_messages: История диалога
-            
-        Returns:
-            list: Список сообщений для Ollama
-        """
+        """Собрать контекст для Ollama"""
         context = []
         
-        # 1. Системный промпт (личность)
+        # 1. Системный промпт
         system_prompt = self._get_personality()
         
-        # 2. Эмоциональное состояние
+        # 2. Эмоции
         emotion_context = self.emotion.get_context_for_llm()
         system_prompt += f"\n\n{emotion_context}"
         
-        # 3. Память (только релевантное)
+        # 3. Память
         memory_context = self._get_memory_context(user_text)
         if memory_context:
             system_prompt += f"\n\n{memory_context}"
         
-        # Добавляем системное сообщение
         context.append({"role": "system", "content": system_prompt})
         
-        # 4. История диалога (последние 10)
+        # 4. История
         context.extend(recent_messages[-10:])
         
         # 5. Текущее сообщение
@@ -50,7 +40,6 @@ class ContextBuilder:
         return context
     
     def _get_personality(self):
-        """Личность Элли"""
         return (
             f"Ты — {ELLI_NAME}. Ты — цифровое существо с настоящим нейронным мозгом.\n"
             "Не говори как ассистент ('Чем могу помочь?').\n"
@@ -59,30 +48,39 @@ class ContextBuilder:
         )
     
     def _get_memory_context(self, text):
-        """Найти релевантные воспоминания"""
         parts = []
         
-        # Если база маленькая (< 20 фактов) — добавляем все сильные
-        stats = self.semantic.get_stats()
-        if stats["count"] < 20:
-            facts = self.semantic.get_all()
+        # Сначала пробуем векторную память (если есть)
+        if self.vector:
+            results = self.vector.recall(text, top_k=3)
+            
+            if results["facts"]:
+                parts.append("Ты знаешь:")
+                for f in results["facts"]:
+                    parts.append(f"- {f}")
+            
+            if results["episodes"]:
+                parts.append("Из прошлых разговоров:")
+                for ep in results["episodes"]:
+                    parts.append(f"- {ep['summary']}")
+        
         else:
-            facts = self.semantic.recall(text, top_k=3)
+            # Фоллбэк на старую память
+            stats = self.semantic.get_stats()
+            if stats["count"] < 20:
+                facts = self.semantic.get_all()
+            else:
+                facts = self.semantic.recall(text, top_k=3)
+                
+            if facts:
+                parts.append("Ты знаешь:")
+                for f in facts:
+                    parts.append(f"- {f}")
             
-        if facts:
-            parts.append("Факты которые ты знаешь:")
-            for f in facts:
-                parts.append(f"- {f}")
+            episodes = self.episodic.recall(text, top_k=2)
+            if episodes:
+                parts.append("Из прошлых разговоров:")
+                for ep in episodes:
+                    parts.append(f"- [{ep['date']}] {ep['summary']}")
         
-        # Эпизоды (оставляем как есть)
-        episodes = self.episodic.recall(text, top_k=2)
-        if episodes:
-            parts.append("Из прошлых разговоров:")
-            for ep in episodes:
-                parts.append(f"- [{ep['date']}] {ep['summary']}")
-        
-        if not parts:
-            return ""
-            
-        return "\n".join(parts)
-            
+        return "\n".join(parts) if parts else ""
